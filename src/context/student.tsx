@@ -1,6 +1,6 @@
 "use client";
 
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -14,17 +14,17 @@ import studentService, {
   AddStudentDto,
   EditStudentDto,
 } from "@/services/stydents";
+import { getAuthToken } from "@/services/auth";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
-// Define context state type
-interface StudentContextType {
+type StudentContextType = {
   students: StudentDto[];
   grades: GradeDto[];
   genders: GenderDto[];
   loading: boolean;
   error: string | null;
-  fetchStudents: () => Promise<void>;
-  fetchGrades: () => Promise<void>;
-  fetchGenders: () => Promise<void>;
+  refreshData: () => Promise<void>;
   addStudent: (student: AddStudentDto) => Promise<void>;
   editStudent: (student: EditStudentDto) => Promise<void>;
   deleteStudents: (ids: string[]) => Promise<void>;
@@ -33,173 +33,167 @@ interface StudentContextType {
     addStudents?: AddStudentDto[];
     editStudents?: EditStudentDto[];
   }) => Promise<void>;
-}
+};
 
-// Create context with default undefined value
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
 
-// Provider component
-export const StudentProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [students, setStudents] = useState<StudentDto[]>([]);
-  const [grades, setGrades] = useState<GradeDto[]>([]);
-  const [genders, setGenders] = useState<GenderDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+export const StudentProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const [state, setState] = useState<{
+    students: StudentDto[];
+    grades: GradeDto[];
+    genders: GenderDto[];
+    loading: boolean;
+    error: string | null;
+    initialized: boolean;
+  }>({
+    students: [],
+    grades: [],
+    genders: [],
+    loading: true,
+    error: null,
+    initialized: false,
+  });
 
-  // Fetch all students
-  const fetchStudents = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchInitialData = async (retry = true) => {
     try {
-      const data = await studentService.getAllStudents();
-      setStudents(data);
-    } catch (err) {
-      setError("Failed to fetch students");
-      console.error(err);
+      const token = getAuthToken();
+      if (!token) {
+        console.log("No auth token found, redirecting to login");
+        router.push("/login");
+        return;
+      }
+
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
+      const [grades, genders, students] = await Promise.all([
+        studentService.getAllGrades(),
+        studentService.getAllGenders(),
+        studentService.getAllStudents(),
+      ]);
+
+      setState((prev) => ({
+        ...prev,
+        grades,
+        genders,
+        students,
+        initialized: true,
+        error: null,
+      }));
+    } catch (error) {
+      console.error("Failed to load initial data:", error);
+      if (retry) {
+        console.log("Retrying data fetch...");
+        setTimeout(() => fetchInitialData(false), 1000);
+        return;
+      }
+      setState((prev) => ({
+        ...prev,
+        error:
+          "Failed to load initial data. Please reload the page or check your connection.",
+      }));
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        router.push("/login");
+      }
     } finally {
-      setLoading(false);
+      setState((prev) => ({ ...prev, loading: false }));
     }
   };
 
-  // Fetch all grades
-  const fetchGrades = async () => {
-    setLoading(true);
-    setError(null);
+  const refreshData = () => fetchInitialData();
+
+  const handleOperation = async (
+    operation: () => Promise<void>,
+    errorMessage: string
+  ) => {
     try {
-      const data = await studentService.getAllGrades();
-      setGrades(data);
-    } catch (err) {
-      setError("Failed to fetch grades");
-      console.error(err);
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+      await operation();
+      await fetchInitialData(false);
+    } catch (error) {
+      setState((prev) => ({ ...prev, error: errorMessage }));
+      console.error(error);
+      throw error;
     } finally {
-      setLoading(false);
+      setState((prev) => ({ ...prev, loading: false }));
     }
   };
 
-  // Fetch all genders
-  const fetchGenders = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await studentService.getAllGenders();
-      setGenders(data);
-    } catch (err) {
-      setError("Failed to fetch genders");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const addStudent = (student: AddStudentDto) =>
+    handleOperation(
+      () => studentService.addStudent(student),
+      "Failed to add student"
+    );
 
-  // Add a student
-  const addStudent = async (student: AddStudentDto) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await studentService.addStudent(student);
-      await fetchStudents(); // Refresh the list
-    } catch (err) {
-      setError("Failed to add student");
-      console.error(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const editStudent = (student: EditStudentDto) =>
+    handleOperation(
+      () => studentService.editStudent(student),
+      "Failed to update student"
+    );
 
-  // Edit a student
-  const editStudent = async (student: EditStudentDto) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await studentService.editStudent(student);
-      await fetchStudents(); // Refresh the list
-    } catch (err) {
-      setError("Failed to update student");
-      console.error(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const deleteStudents = (ids: string[]) =>
+    handleOperation(
+      () => studentService.deleteStudents(ids),
+      "Failed to delete students"
+    );
 
-  // Delete students
-  const deleteStudents = async (ids: string[]) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await studentService.deleteStudents(ids);
-      await fetchStudents(); // Refresh the list
-    } catch (err) {
-      setError("Failed to delete students");
-      console.error(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Bulk operations
   const bulkOperations = async (operations: {
     deleteIds?: string[];
     addStudents?: AddStudentDto[];
     editStudents?: EditStudentDto[];
-  }) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await studentService.bulkOperations({
-        deleteId: operations.deleteIds,
-        addedStudent: operations.addStudents,
-        editedStudent: operations.editStudents,
-      });
-      await fetchStudents(); // Refresh the list
-    } catch (err) {
-      setError("Failed to perform bulk operations");
-      console.error(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  }) =>
+    handleOperation(
+      () =>
+        studentService.bulkOperations({
+          deleteId: operations.deleteIds,
+          addedStudent: operations.addStudents,
+          editedStudent: operations.editStudents,
+        }),
+      "Failed to perform bulk operations"
+    );
 
-  // Load initial data
   useEffect(() => {
-    const loadInitialData = async () => {
-      await Promise.all([fetchGrades(), fetchGenders()]);
-      await fetchStudents();
+    // Listen for loginSuccess event to trigger data fetching
+    const handleLoginSuccess = () => {
+      fetchInitialData();
     };
 
-    loadInitialData();
+    window.addEventListener("loginSuccess", handleLoginSuccess);
+
+    // Fetch data on mount if token exists
+    if (typeof window !== "undefined" && getAuthToken()) {
+      fetchInitialData();
+    }
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener("loginSuccess", handleLoginSuccess);
+    };
   }, []);
 
-  const value = {
-    students,
-    grades,
-    genders,
-    loading,
-    error,
-    fetchStudents,
-    fetchGrades,
-    fetchGenders,
-    addStudent,
-    editStudent,
-    deleteStudents,
-    bulkOperations,
-  };
-
   return (
-    <StudentContext.Provider value={value}>{children}</StudentContext.Provider>
+    <StudentContext.Provider
+      value={{
+        students: state.students,
+        grades: state.grades,
+        genders: state.genders,
+        loading: state.loading,
+        error: state.error,
+        refreshData,
+        addStudent,
+        editStudent,
+        deleteStudents,
+        bulkOperations,
+      }}
+    >
+      {children}
+    </StudentContext.Provider>
   );
 };
 
-// Custom hook for using the context
 export const useStudents = () => {
   const context = useContext(StudentContext);
-  if (context === undefined) {
-    throw new Error("useStudents must be used within a StudentProvider");
-  }
+  if (!context)
+    throw new Error("useStudents must be used within StudentProvider");
   return context;
 };

@@ -52,3 +52,49 @@ export default function FilterComponent() {
     </div>
   );
 }
+// "use client";
+
+// import React from "react";
+// import { DateBox } from "devextreme-react";
+// import Image from "next/image";
+
+// interface CustomDateProps {
+//   value: string | Date | null;
+//   onChange: (date: Date | null) => void;
+//   placeholder?: string;
+//   className?: string;
+//   disabled?: boolean;
+// }
+
+// const CustomDate: React.FC<CustomDateProps> = ({
+//   value,
+//   onChange,
+//   placeholder = "dd/mm/yyyy",
+//   className = "",
+//   disabled = false,
+// }) => {
+//   return (
+//     <div className="relative">
+//       <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+//         <Image src="/calendar.svg" alt="Calendar" width={16} height={16} />
+//       </div>
+//       <DateBox
+//         value={value}
+//         onValueChanged={(e) => onChange(e.value)}
+//         displayFormat="dd/MM/yyyy"
+//         placeholder={placeholder}
+//         openOnFieldClick={true}
+//         showClearButton={true}
+//         disabled={disabled}
+//         className={`w-56 p-2 !bg-[#ECECEC] !border-b-2 !border-[#8e8e8e] pr-8 ${className}`}
+//         stylingMode="underlined"
+//         calendarOptions={{
+//           maxZoomLevel: "month",
+//           minZoomLevel: "century",
+//         }}
+//       />
+//     </div>
+//   );
+// };
+
+// export default CustomDate;

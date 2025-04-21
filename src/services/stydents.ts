@@ -68,9 +68,21 @@ apiClient.interceptors.request.use((config) => {
   const token = getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.warn("No auth token available for API request");
   }
   return config;
 });
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      console.error("Authentication error:", error);
+      // Could trigger redirect or auth refresh here
+    }
+    return Promise.reject(error);
+  }
+);
 
 const studentService = {
   // Get all students

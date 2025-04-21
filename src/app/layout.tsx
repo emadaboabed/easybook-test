@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { StudentProvider } from "@/context/student";
 import "devextreme/dist/css/dx.light.css";
 import { Work_Sans } from "next/font/google";
 
@@ -34,7 +35,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${workSans.className} antialiased`}
     >
-      <body>{children}</body>
+      <body>
+        <StudentProvider>{children}</StudentProvider>
+      </body>
     </html>
   );
 }
