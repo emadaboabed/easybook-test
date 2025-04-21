@@ -1,14 +1,22 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* @import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap"); */
 
-* {
-  box-sizing: border-box;
+body {
   margin: 0;
   padding: 0;
+}
+
+* {
+  font-family: var(--font-work-sans);
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-work-sans: "Work Sans", sans-serif;
 }
 
 @theme inline {
@@ -23,6 +31,27 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+/* Base text styles */
+.base-text {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #656262;
+}
+/* DevExtreme overrides */
+.dx-texteditor-input,
+.dx-placeholder,
+.dx-textbox,
+.dx-datebox {
+  font-family: "Work Sans" !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  color: #656262 !important;
 }
 
 /* body {
@@ -41,38 +70,211 @@ a {
   text-decoration: none;
 }
 /* DevExtreme customizations */
-.dx-button-mode-contained.dx-button-default {
-  background-color: #0066ff;
-  border-color: #0066ff;
+/* Enhance the column headers to match the reference image */
+.dx-datagrid-headers .dx-datagrid-table .dx-row > td {
+  height: 48px !important; /* This will make the header row taller */
+  vertical-align: middle !important;
 }
 
-.dx-button-mode-contained.dx-button-default:hover {
-  background-color: #0052cc;
-  border-color: #0052cc;
+/* Make filter row inputs match the reference image */
+.dx-datagrid-filter-row .dx-texteditor {
+  height: 36px !important;
 }
 
-.dx-texteditor {
+/* Add spacing for the plus button and export button area */
+.dx-toolbar .dx-toolbar-after {
+  padding-right: 16px !important;
+}
+
+/* Make the search box match the reference design */
+.dx-datagrid-search-panel .dx-texteditor {
+  height: 36px !important;
+}
+
+/* Make the rows match the height in the reference image */
+.dx-datagrid-rowsview .dx-row > td {
+  height: 56px !important; /* Adjust this to match your image */
+}
+
+/* Fix spacing between filter icon and column title */
+.dx-datagrid-headers .dx-header-filter {
+  margin-left: 4px !important;
+}
+
+/* Remove extra UI elements not present in reference image */
+.dx-datagrid-pager {
+  border-top: 1px solid #e5e7eb !important;
+}
+
+/* Make sure the grid takes up the full height of its container */
+.dx-datagrid {
+  height: 100% !important;
+}
+
+/* Ensure the container for the grid is sized properly */
+main > div {
+  height: calc(100vh - 120px) !important; /* Adjust based on your layout */
+}
+@media (max-width: 768px) {
+  .sidebar-active {
+    transform: translateX(0);
+  }
+
+  .sidebar-inactive {
+    transform: translateX(-100%);
+  }
+}
+.students-grid-container {
+  height: calc(100vh - 112px) !important; /* 72px header + 40px padding */
+}
+
+/* Additional spacing for the logo in sidebar */
+.logo-container {
+  padding-left: 24px;
+  padding-bottom: 24px;
+}
+
+/* Make the datagrid container responsive */
+@media (max-width: 640px) {
+  .students-grid-container {
+    height: calc(
+      100vh - 102px
+    ) !important; /* Adjust for smaller header on mobile */
+  }
+}
+.dx-datagrid-rowsview .dx-row > td {
+  height: 56px !important;
+  padding: 8px 16px !important;
+}
+
+/* Make headers match the design */
+.dx-datagrid-headers .dx-datagrid-table .dx-row > td {
+  height: 48px !important;
+  padding: 12px 16px !important;
+}
+
+/* Add some space around the grid */
+.dx-datagrid {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Adjust the toolbar height to match the design */
+.dx-toolbar {
+  height: 64px !important;
+}
+.students-grid .dx-datagrid-pager {
+  background-color: white;
+  padding: 8px 0;
+  border-top: none;
+}
+
+/* Style for page size selector */
+.students-grid .dx-page-sizes .dx-page-size {
   border-radius: 4px;
-  background-color: #f8f8f8;
+  margin-right: 8px;
+  padding: 5px 10px;
 }
 
-.dx-texteditor-input {
-  padding: 10px 12px;
-  font-size: 14px;
+.students-grid .dx-page-sizes .dx-page-size.dx-selection {
+  background-color: #d1d5db;
+  color: #111827;
 }
 
-/* RTL support for Arabic */
-[dir="rtl"] .dx-texteditor-input {
-  text-align: right;
+/* Style for page numbers */
+.students-grid .dx-pages .dx-page {
+  border-radius: 4px;
+  margin: 0 2px;
+  padding: 5px 10px;
 }
-/* [dir="rtl"] .dx-widget {
-  direction: rtl;
-} */
-@layer components {
-  .dx-textbox {
-    @apply !border-solid !border-[1px] !shadow-sm;
-  }
-  .dx-texteditor-input {
-    @apply !px-4 !py-3;
-  }
+
+.students-grid .dx-pages .dx-page.dx-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Navigation buttons */
+.students-grid .dx-pages .dx-navigate-button {
+  border-radius: 4px;
+  margin: 0 2px;
+  color: #6b7280;
+}
+
+/* Info text */
+.students-grid .dx-info {
+  color: #6b7280;
+  margin-right: 15px;
+}
+
+/* Rows per page selector */
+.students-grid .dx-page-sizes {
+  margin-right: 15px;
+}
+.custom-pager .dx-page-sizes {
+  order: 1;
+  margin-right: auto;
+}
+
+.custom-pager .dx-pages {
+  order: 2;
+  margin-left: auto;
+}
+
+.dx-datagrid-pager .dx-page-size {
+  color: #6b7280;
+}
+
+.dx-datagrid-pager .dx-pager-page-sizes .dx-selectbox {
+  border: none;
+  background: transparent;
+}
+
+.dx-datagrid-pager .dx-selection {
+  background: transparent;
+}
+
+.dx-datagrid-pager .dx-page-sizes .dx-selectbox-label {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+/* position and space out the two halves */
+.custom-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem; /* adjust vertical/horizontal as needed */
+}
+
+/* style the “rows per page” dropdown text */
+.custom-pager .dx-page-sizes {
+  font-size: 0.875rem; /* text-sm */
+}
+
+/* style the page‑buttons container */
+.custom-pager .dx-pages {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* make each page‑button a perfect circle */
+.custom-pager .dx-page {
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  border-radius: 9999px; /* full */
+}
+
+/* highlight the selected page */
+.custom-pager .dx-page.dx-page-selected {
+  background-color: #1366d6;
+  color: #fff;
+}
+
+/* optionally shrink the arrow‑buttons */
+.custom-pager .dx-page-sizes .dx-page-sizes-item,
+.custom-pager .dx-button.dx-pager-after,
+.custom-pager .dx-button.dx-pager-before {
+  font-size: 0.875rem;
 }

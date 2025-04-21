@@ -88,12 +88,20 @@ export default function Login() {
           <div className="hidden md:flex flex-1 bg-white flex-col items-center justify-center relative p-5 border-r border-gray-200">
             <div className="absolute top-5 left-5">
               <Button
-                text="English"
                 stylingMode="outlined"
                 type="normal"
-                icon="globe"
                 className="!border-gray-300 !text-gray-600 hover:!bg-gray-100"
-              />
+              >
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/language.svg"
+                    alt="Language"
+                    width={16}
+                    height={16}
+                  />
+                  <span>English</span>
+                </div>
+              </Button>
               {/* <SelectBox
                 text="English"
                 stylingMode="outlined"
@@ -134,7 +142,7 @@ export default function Login() {
                       setFormData({ ...formData, userName: e.value })
                     }
                     height={40}
-                    className=" !bg-[#F5F5F5] !border-b-[5px] !rounded-none !hover:border-none !border-b-[#8E8E8E] !mb-4"
+                    className=" !bg-[#F5F5F5] !border-b-[5px] !rounded-none !hover:border-none !border-b-[#8E8E8E] !mb-4 "
                   >
                     <Validator>
                       <RequiredRule message="Username is required" />

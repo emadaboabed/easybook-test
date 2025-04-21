@@ -1,276 +1,21 @@
-// // pages/students/index.js
-// import { useEffect, useState, useRef } from "react";
-// import { useRouter } from "next/router";
-// import Head from "next/head";
-// import { Button } from "devextreme-react";
-// import DataGrid, {
-//   Column,
-//   FilterRow,
-//   HeaderFilter,
-//   Paging,
-//   Pager,
-//   Editing,
-//   RequiredRule,
-//   Lookup,
-// } from "devextreme-react/data-grid";
-// import DateBox from "devextreme-react/date-box";
-// import { logout, getAuthToken } from "../../services/auth";
-// import Cookies from "js-cookie";
-
-// const mockStudents = [
-//   {
-//     id: 1,
-//     firstName: "Aisha",
-//     lastName: "Doe",
-//     dob: "1998-05-15",
-//     education: "University",
-//     gender: "male",
-//     country: "Egypt",
-//     city: "Cairo",
-//     mobile: "",
-//     notes: "Very active...",
-//   },
-//   {
-//     id: 2,
-//     firstName: "Aisha",
-//     lastName: "Mohamed",
-//     dob: "1996-05-15",
-//     education: "High School",
-//     gender: "male",
-//     country: "Egypt",
-//     city: "Cairo",
-//     mobile: "+20-111-987-6543",
-//     notes: "Very active...",
-//   },
-//   // ... more mock data as needed
-// ];
-
-// const educationLevels = [
-//   { value: "University", text: "University" },
-//   { value: "High School", text: "High School" },
-// ];
-
-// const genders = [
-//   { value: "male", text: "Male" },
-//   { value: "female", text: "Female" },
-// ];
-
-// export default function StudentsPage() {
-//   const router = useRouter();
-//   const [userName, setUserName] = useState("");
-//   const [students, setStudents] = useState(mockStudents);
-//   const [search, setSearch] = useState("");
-//   const [language, setLanguage] = useState("English");
-
-//   useEffect(() => {
-//     const token = getAuthToken();
-//     const storedUserName = Cookies.get("user_name");
-//     if (!token) {
-//       router.push("/Login");
-//     } else {
-//       setUserName(storedUserName || "User");
-//     }
-//   }, [router]);
-
-//   // Filter logic (simple client-side for mock data)
-//   const filteredStudents = students.filter((s) => {
-//     const q = search.toLowerCase();
-//     return (
-//       s.firstName.toLowerCase().includes(q) ||
-//       s.lastName.toLowerCase().includes(q)
-//     );
-//   });
-
-//   return (
-//     <div className="flex min-h-screen bg-gray-50">
-//       {/* Sidebar */}
-//       <aside className="w-64 bg-white border-r flex flex-col justify-between min-h-screen">
-//         <div>
-//           <div className="flex items-center gap-2 px-6 py-6 border-b">
-//             <span className="font-bold text-lg">Logo</span>
-//           </div>
-//           <nav className="mt-4">
-//             <ul>
-//               <li className="px-6 py-3 bg-blue-50 text-blue-700 rounded-r-full font-semibold flex items-center gap-2">
-//                 <span className="material-icons">table_chart</span>
-//                 Students' Data
-//               </li>
-//             </ul>
-//           </nav>
-//         </div>
-//         <div className="px-6 py-4 border-t">
-//           <Button
-//             text="Logout"
-//             onClick={logout}
-//             stylingMode="outlined"
-//             className="!border-gray-300 !text-gray-600 hover:!bg-gray-100 w-full"
-//           />
-//         </div>
-//       </aside>
-
-//       {/* Main Content */}
-//       <div className="flex-1 flex flex-col">
-//         {/* Header */}
-//         <header className="flex justify-between items-center px-8 py-4 border-b bg-white">
-//           <h1 className="text-xl font-semibold">Students' Data</h1>
-//           <div className="flex items-center gap-4">
-//             <Button
-//               text={language}
-//               stylingMode="outlined"
-//               icon="globe"
-//               onClick={() =>
-//                 setLanguage(language === "English" ? "Arabic" : "English")
-//               }
-//               className="!border-gray-300 !text-gray-600 hover:!bg-gray-100"
-//             />
-//             <span className="text-gray-600 font-medium">{userName}</span>
-//             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-//               <span className="material-icons text-gray-500">person</span>
-//             </div>
-//           </div>
-//         </header>
-
-//         {/* Filter/Search Bar */}
-//         <div className="flex items-center gap-4 px-8 py-4 bg-gray-50 border-b">
-//           <span className="font-medium text-gray-700">Filter By :</span>
-//           <input
-//             type="text"
-//             placeholder="Search by first name, last name"
-//             value={search}
-//             onChange={(e) => setSearch(e.target.value)}
-//             className="border rounded px-3 py-2 w-72 focus:outline-none focus:ring"
-//           />
-//         </div>
-
-//         {/* DataGrid Section */}
-//         <main className="flex-1 p-8 bg-gray-50 overflow-auto">
-//           <div className="bg-white rounded-lg shadow p-4">
-//             <DataGrid
-//               dataSource={filteredStudents}
-//               keyExpr="id"
-//               showBorders={true}
-//               columnAutoWidth={true}
-//               allowColumnResizing={true}
-//               rowAlternationEnabled={true}
-//               focusedRowEnabled={true}
-//               height={500}
-//               wordWrapEnabled={true}
-//               hoverStateEnabled={true}
-//               showColumnLines={true}
-//               showRowLines={true}
-//               repaintChangesOnly={true}
-//               allowColumnReordering={true}
-//             >
-//               <FilterRow visible={true} />
-//               <HeaderFilter visible={true} />
-//               <Paging defaultPageSize={5} />
-//               <Pager
-//                 showPageSizeSelector={true}
-//                 allowedPageSizes={[5, 10, 25]}
-//                 showNavigationButtons={true}
-//                 showInfo={true}
-//               />
-//               <Editing
-//                 mode="cell"
-//                 allowUpdating={true}
-//                 allowAdding={true}
-//                 allowDeleting={true}
-//                 useIcons={true}
-//               />
-//               <Column dataField="firstName" caption="First Name" />
-//               <Column dataField="lastName" caption="Last Name" />
-//               <Column
-//                 dataField="dob"
-//                 caption="Date of Birth"
-//                 dataType="date"
-//                 editCellComponent={DateBox}
-//               />
-//               <Column
-//                 dataField="education"
-//                 caption="Educational level"
-//                 cellRender={({ value }) => value}
-//                 editCellRender={({ value, setValue }) => (
-//                   <select
-//                     value={value}
-//                     onChange={(e) => setValue(e.target.value)}
-//                     className="border rounded px-2 py-1"
-//                   >
-//                     {educationLevels.map((lvl) => (
-//                       <option key={lvl.value} value={lvl.value}>
-//                         {lvl.text}
-//                       </option>
-//                     ))}
-//                   </select>
-//                 )}
-//               />
-//               <Column
-//                 dataField="gender"
-//                 caption="Gender"
-//                 cellRender={({ value }) => value}
-//                 editCellRender={({ value, setValue }) => (
-//                   <select
-//                     value={value}
-//                     onChange={(e) => setValue(e.target.value)}
-//                     className="border rounded px-2 py-1"
-//                   >
-//                     {genders.map((g) => (
-//                       <option key={g.value} value={g.value}>
-//                         {g.text}
-//                       </option>
-//                     ))}
-//                   </select>
-//                 )}
-//               />
-//               <Column dataField="country" caption="Country" />
-//               <Column dataField="city" caption="City" />
-//               <Column
-//                 dataField="mobile"
-//                 caption="Mobile"
-//                 cellRender={({ value }) =>
-//                   value ? (
-//                     value
-//                   ) : (
-//                     <span className="bg-red-200 text-red-700 px-2 py-1 rounded text-xs font-semibold">
-//                       MOBILE IS required
-//                     </span>
-//                   )
-//                 }
-//                 editCellRender={({ value, setValue }) => (
-//                   <input
-//                     type="text"
-//                     value={value}
-//                     onChange={(e) => setValue(e.target.value)}
-//                     className="border rounded px-2 py-1"
-//                   />
-//                 )}
-//               >
-//                 <RequiredRule message="Mobile is required" />
-//               </Column>
-//               <Column dataField="notes" caption="Notes" />
-//             </DataGrid>
-//           </div>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Head from "next/head";
-import { Button } from "devextreme-react";
+
+import React, { useState } from "react";
+import "devextreme/dist/css/dx.light.css";
 import DataGrid, {
   Column,
-  FilterRow,
-  HeaderFilter,
   Paging,
   Pager,
   Editing,
+  Export,
   RequiredRule,
+  SearchPanel,
+  Item,
 } from "devextreme-react/data-grid";
-import DateBox from "devextreme-react/date-box";
-import { logout, getAuthToken } from "@/services/api"; // Ensure correct path
-import Cookies from "js-cookie";
+import Image from "next/image";
+import { Button, DateBox, List, TextBox, Toolbar } from "devextreme-react";
+import FilterComponent from "@/components/Filter";
+import CustomDate from "@/components/customDate";
 
 const mockStudents = [
   {
@@ -297,127 +42,191 @@ const mockStudents = [
     mobile: "+20-111-987-6543",
     notes: "Very active...",
   },
+  ...Array.from({ length: 8 }, (_, i) => ({
+    id: i + 3,
+    firstName: "Aisha",
+    lastName: i % 2 === 0 ? "Doe" : "Mohamed",
+    dob: "1996-05-15",
+    education: i % 2 === 0 ? "University" : "High School",
+    gender: "male",
+    country: "Egypt",
+    city: "Cairo",
+    mobile: "+20-111-987-6543",
+    notes: "Very active...",
+  })),
 ];
+const customizePages = (pages) => {
+  const startPage = pages[0];
+  const endPage = pages[pages.length - 1];
 
+  if (startPage.value > 1) {
+    pages.unshift({
+      text: "<",
+      value: startPage.value - 1,
+      className: "custom-nav-button",
+    });
+  }
+
+  if (endPage.value < pages[pages.length - 1].pageCount) {
+    pages.push({
+      text: ">",
+      value: endPage.value + 1,
+      className: "custom-nav-button",
+    });
+  }
+
+  return pages;
+};
 const educationLevels = [
-  { value: "University", text: "University" },
-  { value: "High School", text: "High School" },
+  { id: 1, value: "University" },
+  { id: 2, value: "High School" },
 ];
 
 const genders = [
-  { value: "male", text: "Male" },
-  { value: "female", text: "Female" },
+  { id: 1, value: "male", text: "Male" },
+  { id: 2, value: "female", text: "Female" },
 ];
 
-export default function StudentsPage() {
-  const router = useRouter();
-  const [userName, setUserName] = useState("");
-  const [students, setStudents] = useState(mockStudents);
-  const [search, setSearch] = useState("");
+function App() {
   const [language, setLanguage] = useState("English");
-
-  useEffect(() => {
-    const token = getAuthToken();
-    const storedUserName = Cookies.get("user_name");
-    if (!token) {
-      router.push("/login");
-    } else {
-      setUserName(storedUserName || "User");
-    }
-  }, [router]);
-
-  const filteredStudents = students.filter((s) => {
-    const q = search.toLowerCase();
-    return (
-      s.firstName.toLowerCase().includes(q) ||
-      s.lastName.toLowerCase().includes(q)
-    );
-  });
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [dateValue, setDateValue] = useState("");
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="w-64 bg-white border-r flex flex-col justify-between min-h-screen">
-        <div>
-          <div className="flex items-center gap-2 px-6 py-6 border-b">
-            <span className="font-bold text-lg">Logo</span>
-          </div>
-          <nav className="mt-4">
-            <ul>
-              <li className="px-6 py-3 bg-blue-50 text-blue-700 rounded-r-full font-semibold flex items-center gap-2">
-                <span className="material-icons">table_chart</span>
-                Students' Data
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div className="px-6 py-4 border-t">
-          <Button
-            text="Logout"
-            onClick={logout}
-            stylingMode="outlined"
-            className="!border-gray-300 !text-gray-600 hover:!bg-gray-100 w-full"
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-20 w-[250px] bg-white border-r border-[#e8e8e8] transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-[250px] md:min-w-[250px] md:flex md:flex-col">
+        <div className="p-6 border-b  border-[#e8e8e8] flex items-center h-[14vh] gap-3">
+          <Image
+            className="ml-3"
+            src="/logo.svg"
+            alt="logo"
+            width={24}
+            height={24}
           />
+          <span>Logo</span>
+        </div>
+        <nav className="flex-1  mt-5">
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#edf4fe] text-blue-700 border-l-4 border-blue-500 h-14  ">
+            <Image src="/student.svg" alt="Students" width={24} height={24} />
+            <span>Students' Data</span>
+          </div>
+        </nav>
+
+        <div className="p-4 border-t  border-[#e8e8e8] ">
+          <Button className="w-full flex items-center justify-center gap-3 px-4 py-3  hover:bg-gray-50 ">
+            <Image src="/logout.svg" alt="Logout" width={24} height={24} />
+            <span>Logout</span>
+          </Button>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center px-8 py-4 border-b bg-white">
-          <h1 className="text-xl font-semibold">Students' Data</h1>
-          <div className="flex items-center gap-4">
-            <Button
-              text={language}
-              stylingMode="outlined"
-              icon="globe"
-              onClick={() =>
-                setLanguage(language === "English" ? "Arabic" : "English")
-              }
-              className="!border-gray-300 !text-gray-600 hover:!bg-gray-100"
-            />
-            <span className="text-gray-600 font-medium">{userName}</span>
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="material-icons text-gray-500">person</span>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col bg-gray-50 w-full md:pl-0">
+        <header className="w-full h-[72px] bg-white border-b border-[#e8e8e8] flex items-center justify-end px-8 sticky top-0 z-10 ">
+          <div className="flex items-end justify-end gap-4 me-7">
+            <div className="flex items-end gap-2">
+              <span className="text-gray-600 hidden sm:inline mb-2.5">
+                William Jacob
+              </span>
+              <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
+                <Image
+                  src="/avatar.svg"
+                  alt="User Avatar"
+                  width={40}
+                  height={40}
+                  className="rounded-md"
+                />
+              </div>
+              <Button
+                className="!px-4  "
+                onClick={() =>
+                  setLanguage(language === "English" ? "Arabic" : "English")
+                }
+              >
+                <Image
+                  src="/language.svg"
+                  alt="Language"
+                  width={24}
+                  height={24}
+                />
+                <span>{language}</span>
+              </Button>
             </div>
           </div>
         </header>
 
-        <div className="flex items-center gap-4 px-8 py-4 bg-gray-50 border-b">
-          <span className="font-medium text-gray-700">Filter By :</span>
-          <input
-            type="text"
-            placeholder="Search by first name, last name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded px-3 py-2 w-72 focus:outline-none focus:ring"
-          />
-        </div>
+        <main className="flex-1 bg-[#f3f6f9] ">
+          <span className="text-xl font-semibold h-4"></span>
+          <div className="bg-white rounded-lg shadow-sm p-6 m-[20px] ">
+            <h1 className="text-2xl font-semibold mb-4">Students' Data</h1>
+            <div className="flex flex-col gap-4">
+              {/* Filter By Label */}
+              <div className="flex items-center   rounded-lg w-full">
+                <div className="flex items-center text-blue-500 mr-4">
+                  <Image
+                    src="/filter.svg"
+                    alt="Filter"
+                    width={18}
+                    height={18}
+                    className="mr-2"
+                  />
+                  <span className="font-medium">Filter By :</span>
+                </div>
 
-        <main className="flex-1 p-8 bg-gray-50 overflow-auto">
-          <div className="bg-white rounded-lg shadow p-4">
+                {/* Search Input with Icon */}
+                <div className="relative mr-4">
+                  <TextBox
+                    className="w-72 p-2 pl-10 !bg-[#ECECEC] !border-b-2 !border-[#8e8e8e] "
+                    placeholder="Search by first name, last name"
+                    value={searchValue}
+                    onValueChanged={(e) => setSearchValue(e.value)}
+                    showClearButton={true}
+                    mode="search"
+                    valueChangeEvent="input"
+                    stylingMode="underlined"
+                  />
+                </div>
+
+                {/* Date Input with Calendar Icon */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    {/* <Image
+                      src="/calendar.svg"
+                      alt="Calendar"
+                      width={16}
+                      height={16}
+                    /> */}
+                  </div>
+                  <CustomDate
+                    value={dateValue}
+                    onChange={(e) => setDateValue(e)}
+                    placeholder="22/2/2000"
+                  />
+                </div>
+              </div>
+
+              {/* DataGrid component */}
+            </div>
+            <hr className="border-t border-4 rounded-l-full rounded-r-full border-gray-200 my-6 print:hidden" />
             <DataGrid
-              dataSource={filteredStudents}
-              keyExpr="id"
-              showBorders={true}
-              columnAutoWidth={true}
+              className="students-grid"
+              dataSource={mockStudents}
+              width="100%"
+              height="calc(100% - 120px)"
+              columnAutoWidth={false}
               allowColumnResizing={true}
-              rowAlternationEnabled={true}
-              focusedRowEnabled={true}
-              height={500}
-              wordWrapEnabled={true}
-              hoverStateEnabled={true}
-              showColumnLines={true}
+              columnResizingMode="nextColumn"
+              errorRowEnabled
+              showBorders
+              showColumnLines={false}
               showRowLines={true}
-              repaintChangesOnly={true}
-              allowColumnReordering={true}
+              rowAlternationEnabled={false}
+              allowPaging={true}
+              wordWrapEnabled={true}
             >
-              <FilterRow visible={true} />
-              <HeaderFilter visible={true} />
-              <Paging defaultPageSize={5} />
-              <Pager
-                showPageSizeSelector={true}
-                allowedPageSizes={[5, 10, 25]}
-                showNavigationButtons={true}
-                showInfo={true}
-              />
+              <Export enabled={true} />
               <Editing
                 mode="cell"
                 allowUpdating={true}
@@ -425,77 +234,87 @@ export default function StudentsPage() {
                 allowDeleting={true}
                 useIcons={true}
               />
-              <Column dataField="firstName" caption="First Name" />
-              <Column dataField="lastName" caption="Last Name" />
+
               <Column
+                dataField="firstName"
+                caption="FIRST NAME"
+                alignment="left"
+                allowFiltering={false}
+              />
+              <Column
+                allowFiltering={false}
+                dataField="lastName"
+                caption="LAST NAME"
+                alignment="left"
+              />
+              <Column
+                allowFiltering={false}
                 dataField="dob"
-                caption="Date of Birth"
+                caption="DATE OF BIRTH"
                 dataType="date"
-                editCellComponent={DateBox}
+                format="MM/dd/yyyy"
               />
               <Column
+                allowFiltering={false}
                 dataField="education"
-                caption="Educational level"
-                cellRender={({ value }) => value}
-                editCellRender={({ value, setValue }) => (
-                  <select
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    {educationLevels.map((lvl) => (
-                      <option key={lvl.value} value={lvl.value}>
-                        {lvl.text}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                caption="EDUCATIONAL LEVEL"
+                lookup={{
+                  dataSource: educationLevels,
+                  valueExpr: "value",
+                  displayExpr: "value",
+                }}
               />
               <Column
+                allowFiltering={false}
                 dataField="gender"
-                caption="Gender"
-                cellRender={({ value }) => value}
-                editCellRender={({ value, setValue }) => (
-                  <select
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    ascendants=
-                    {genders.map((g) => (
-                      <option key={g.value} value={g.value}>
-                        {g.text}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                caption="GENDER"
+                lookup={{
+                  dataSource: genders,
+                  valueExpr: "value",
+                  displayExpr: "text",
+                }}
               />
-              <Column dataField="country" caption="Country" />
-              <Column dataField="city" caption="City" />
               <Column
+                allowFiltering={false}
+                dataField="country"
+                caption="COUNTRY"
+              />
+              <Column allowFiltering={false} dataField="city" caption="CITY" />
+              <Column
+                allowFiltering={false}
                 dataField="mobile"
-                caption="Mobile"
-                cellRender={({ value }) =>
-                  value ? (
-                    value
+                caption="MOBILE"
+                cellRender={(cellData) => {
+                  return cellData.value ? (
+                    <span>{cellData.value}</span>
                   ) : (
-                    <span className="bg-red-200 text-red-700 px-2 py-1 rounded text-xs font-semibold">
+                    <span className="bg-red-100 text-red-600 px-2 py-0 rounded text-xs font-medium">
                       MOBILE IS required
                     </span>
-                  )
-                }
-                editCellRender={({ value, setValue }) => (
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="border rounded px-2 py-1"
-                  />
-                )}
+                  );
+                }}
               >
                 <RequiredRule message="Mobile is required" />
               </Column>
-              <Column dataField="notes" caption="Notes" />
+              <Column
+                dataField="notes"
+                caption="NOTES"
+                allowFiltering={false}
+              />
+              <hr className="border-t border-4 rounded-l-full rounded-r-full border-gray-200 my-6 print:hidden" />
+              <Paging defaultPageSize={10} />
+              <Pager
+                visible={true}
+                showPageSizeSelector={true}
+                allowedPageSizes={[5, 10, 25]}
+                showInfo={false}
+                showNavigationButtons={false}
+                displayMode="compact"
+                label="Rows per page"
+                infoText="Page {0} of {1} ({2} items)"
+                needed
+                cssClass="custom-pager"
+              />
             </DataGrid>
           </div>
         </main>
@@ -503,3 +322,5 @@ export default function StudentsPage() {
     </div>
   );
 }
+
+export default App;
