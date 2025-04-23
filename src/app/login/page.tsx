@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Button from "devextreme-react/button";
 import TextBox from "devextreme-react/text-box";
 import { Validator, RequiredRule } from "devextreme-react/validator";
@@ -17,8 +17,8 @@ export default function Login() {
 
   useEffect(() => {
     if (Cookies.get("auth_token")) {
-      notify("You are already logged in.", "info", 2000);
-      setTimeout(() => redirect("/student"), 2000);
+      notify("You are already logged in.", "info", 4000);
+      setTimeout(() => router.push("/student"), 2000);
     }
   }, [router]);
 
@@ -32,7 +32,7 @@ export default function Login() {
 
       window.dispatchEvent(new Event("loginSuccess"));
 
-      setTimeout(() => router.push("/student"), 0);
+      setTimeout(() => router.push("/student"), 2000);
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ||

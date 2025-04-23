@@ -9,7 +9,6 @@ import DataGrid, {
   Editing,
   Export,
   RequiredRule,
-  SearchPanel,
 } from "devextreme-react/data-grid";
 import Image from "next/image";
 import { Button, TextBox } from "devextreme-react";
@@ -159,6 +158,7 @@ export default function StudentPage() {
     setDeleteModalVisible(false);
     setDeleteRowData(null);
   };
+  console.log("student");
 
   return (
     <div className="flex min-h-screen">
